@@ -1,6 +1,6 @@
 // Worker to load Bible data using unified parser
 importScripts('https://cdn.jsdelivr.net/npm/fzstd@0.1.1/umd/index.js');
-importScripts('/parser.js');
+importScripts('./parser.js');
 
 const parser = new BibleParser();
 
