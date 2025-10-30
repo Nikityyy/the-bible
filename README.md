@@ -1,4 +1,4 @@
-# The Bible App 📖
+# The Bible
 
 A beautiful, modern Progressive Web App for reading the Bible offline in German and English. Where faith and curiosity meet.
 
