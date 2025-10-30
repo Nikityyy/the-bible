@@ -1,0 +1,138 @@
+/* ==========================================================================
+   CSS Custom Properties & Variables
+   ========================================================================== */
+
+:root {
+  --gradient-light-depth: linear-gradient(180deg, #FFFDF5 0%, #FAFAFA 100%);
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F9F9FB;
+  min-height: 100dvh;
+}
+
+/* ==========================================================================
+   Component Styles
+   ========================================================================== */
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* View Transitions */
+.view-main {
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
+}
+
+.view-reading {
+  transform: translateX(100%);
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+}
+
+body.reading-active .view-main {
+  transform: translateX(-100%);
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.reading-active .view-reading {
+  transform: translateX(0);
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* LiquidGlass Effect */
+.liquidGlass-wrapper {
+  position: relative;
+  display: flex;
+  font-weight: 600;
+  overflow: hidden;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+}
+
+.liquidGlass-effect {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  backdrop-filter: blur(3px);
+  overflow: hidden;
+}
+
+.liquidGlass-tint {
+  z-index: 1;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.50);
+}
+
+.liquidGlass-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+             inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.liquidGlass-text {
+  z-index: 3;
+  width: 100%;
+}
+
+/* Header Styles */
+header {
+  position: relative;
+}
+
+/* Book Card Hover Effect */
+.book-card {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Progress Bar */
+.finished-progress {
+  background-color: #22c55e;
+}
+
+/* Book Chapter Styling */
+span:has(.book-chapter-label),
+.book-chapter-label {
+  text-align: center;
+  color: #1C1C1E;
+}
+
+.chapter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6E6E73;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* Loading Overlay */
+#loading-overlay {
+  display: none;
+}
