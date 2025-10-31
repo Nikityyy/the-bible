@@ -233,10 +233,12 @@ export class ViewManager {
 
     renderBookList(books, bookProgress, language = 'en') {
         const bookArray = Object.keys(books);
-        const isMobile = window.innerWidth < 768;
+        // const isMobile = window.innerWidth < 768;
 
         // For mobile, use simpler layout and limit initial render
-        const maxInitialRender = isMobile ? 20 : bookArray.length;
+        // const maxInitialRender = isMobile ? 20 : bookArray.length;
+        // for now default because loading is bugged and likely fast enough
+        const maxInitialRender = bookArray.length;
         const initialBooks = bookArray.slice(0, maxInitialRender);
 
         let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-total-books="${bookArray.length}" data-rendered-count="${initialBooks.length}">`;
