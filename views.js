@@ -104,7 +104,7 @@ export class ViewManager {
                     <a class="book-link liquidGlass-text block p-5 transition-transform active:scale-[0.98]" href="#">
             <h3 class="text-lg font-semibold text-text-primary truncate">${book}</h3>
             <p class="text-sm text-text-secondary mt-1">${chaptersInBook} ${language === 'de' ? 'Kapitel' : 'Chapters'}</p>
-            <div class="mt-4 h-1.5 w-full rounded-full bg-black/5 overflow-hidden">
+            <div class="mt-4 h-1.5 w-full rounded-full bg-black/5 dark:bg-dark-divider-faint overflow-hidden">
                             <div class="h-1.5 rounded-full ${progressPercentage === 100 ? 'finished-progress' : 'bg-gradient-to-r from-gold-accent to-gold-accent-light'}" style="width: ${progressPercentage}%"></div>
                         </div>
                     </a>
