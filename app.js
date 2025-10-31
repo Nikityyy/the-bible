@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewManager = new ViewManager();
 
     let bibleData = {};
+    let bookMetadata = {};
 
     // Dark Mode Logic
     function applyDarkMode(isDark) {
@@ -35,19 +36,35 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Event Handlers
-    function handleBookClick(book) {
+    async function handleBookClick(book) {
         const state = stateManager.getState();
         const langProgress = state.readingProgress[state.language];
         const chapter = langProgress.books[book] || 1;
-        stateManager.updateReadingProgress(state.language, { book, chapter });
-        stateManager.setCurrentPage('reading');
-        viewManager.showReadingView();
-        renderChapter(book, chapter);
-        // Scroll reading view to top
-        if (viewManager.domElements.readingMain) {
-            viewManager.domElements.readingMain.scrollTop = 0;
+
+        // Show loading for book data if not already loaded
+        if (!bibleData[book]) {
+            viewManager.showLoading(`Loading ${book}...`);
         }
-        
+
+        try {
+            // Lazy load book data if not available
+            await loadBookData(book, state.language);
+
+            stateManager.updateReadingProgress(state.language, { book, chapter });
+            stateManager.setCurrentPage('reading');
+            viewManager.showReadingView();
+            renderChapter(book, chapter);
+
+            // Scroll reading view to top
+            if (viewManager.domElements.readingMain) {
+                viewManager.domElements.readingMain.scrollTop = 0;
+            }
+
+            viewManager.hideLoading();
+        } catch (error) {
+            viewManager.hideLoading();
+            viewManager.showError(error);
+        }
     }
 
     function getCanonicalBookOrder(bibleData) {
@@ -249,6 +266,132 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Lazy loading: Load minimal book metadata for navigation
+    function loadBookMetadata(language) {
+        return new Promise((resolve, reject) => {
+            const cacheKey = `metadata-${language}`;
+            bibleDB.getMetadata(cacheKey).then(cachedMetadata => {
+                if (cachedMetadata) {
+                    bookMetadata = cachedMetadata;
+                    resolve();
+                    return;
+                }
+
+                // Load minimal metadata from compressed file
+                const worker = new Worker('parser-worker.js');
+                worker.postMessage({
+                    url: textFiles[language],
+                    language: language,
+                    metadataOnly: true
+                });
+
+                worker.onmessage = function (e) {
+                    if (e.data.type === 'result') {
+                        bookMetadata = e.data.metadata;
+                        bibleDB.setMetadata(cacheKey, bookMetadata);
+                        worker.terminate();
+                        resolve();
+                    } else if (e.data.type === 'error') {
+                        worker.terminate();
+                        reject(new Error(e.data.error));
+                    }
+                };
+
+                worker.onerror = function (error) {
+                    worker.terminate();
+                    reject(error);
+                };
+            }).catch(reject);
+        });
+    }
+
+    // Load full Bible data in background after initial render
+    function loadBibleDataInBackground(language) {
+        const cacheKey = `bible-${language}`;
+        bibleDB.get(cacheKey).then(cachedData => {
+            if (cachedData) {
+                bibleData = cachedData;
+                // Update UI with full data if needed
+                updateContinueReading();
+                return;
+            }
+
+            // Load in background without blocking UI
+            const worker = new Worker('parser-worker.js');
+            worker.postMessage({
+                url: textFiles[language],
+                language: language,
+                background: true
+            });
+
+            worker.onmessage = function (e) {
+                if (e.data.type === 'result') {
+                    bibleData = e.data.bibleData;
+                    bibleDB.set(cacheKey, bibleData);
+                    worker.terminate();
+                    // Update UI with full data
+                    updateContinueReading();
+                } else if (e.data.type === 'error') {
+                    worker.terminate();
+                    console.warn('Background Bible loading failed:', e.data.error);
+                }
+            };
+
+            worker.onerror = function (error) {
+                worker.terminate();
+                console.warn('Background Bible loading error:', error);
+            };
+        }).catch(() => {
+            // Silently fail background loading
+            console.warn('Background Bible loading failed');
+        });
+    }
+
+    // Lazy load specific book/chapter data
+    function loadBookData(book, language) {
+        return new Promise((resolve, reject) => {
+            if (bibleData[book]) {
+                resolve(bibleData[book]);
+                return;
+            }
+
+            const cacheKey = `book-${language}-${book}`;
+            bibleDB.getBook(cacheKey).then(cachedBook => {
+                if (cachedBook) {
+                    if (!bibleData[book]) bibleData[book] = cachedBook;
+                    resolve(cachedBook);
+                    return;
+                }
+
+                // Load specific book from compressed file
+                const worker = new Worker('parser-worker.js');
+                worker.postMessage({
+                    url: textFiles[language],
+                    language: language,
+                    bookOnly: book
+                });
+
+                worker.onmessage = function (e) {
+                    if (e.data.type === 'result') {
+                        const bookData = e.data.bookData;
+                        if (!bibleData[book]) bibleData[book] = bookData;
+                        bibleDB.setBook(cacheKey, bookData);
+                        worker.terminate();
+                        resolve(bookData);
+                    } else if (e.data.type === 'error') {
+                        worker.terminate();
+                        reject(new Error(e.data.error));
+                    }
+                };
+
+                worker.onerror = function (error) {
+                    worker.terminate();
+                    reject(error);
+                };
+            }).catch(reject);
+        });
+    }
+
     async function initializeApp() {
         stateManager.loadFromLocalStorage();
         const state = stateManager.getState();
@@ -261,32 +404,26 @@ document.addEventListener('DOMContentLoaded', () => {
             updateContinueReading();
         });
 
-        viewManager.showLoading('Loading Bible data...');
+        // Show skeleton loading for better UX
+        viewManager.showLoading('Initializing...');
         try {
-            await loadBibleData(state.language);
+            // Load minimal data first - just book metadata for navigation
+            await loadBookMetadata(state.language);
 
             // Update UI texts (tab names, etc.) for the current language
             viewManager.updateUITexts(state.language);
 
-            viewManager.renderBookList(bibleData, state.readingProgress[state.language].books, state.language);
-
-            // Validate stored progress
-            let { book } = state.readingProgress[state.language].lastRead;
-            if (!bibleData[book] && Object.keys(bibleData).length > 0) {
-                const firstBook = Object.keys(bibleData)[0];
-                stateManager.updateReadingProgress(state.language, { book: firstBook, chapter: 1 });
-            }
+            // Render book list with skeleton data first
+            viewManager.renderBookList(bookMetadata, state.readingProgress[state.language].books, state.language);
 
             updateContinueReading();
             viewManager.hideLoading();
 
-            if (state.currentPage === 'reading' && state.readingProgress[state.language].lastRead) {
-                const { book, chapter } = state.readingProgress[state.language].lastRead;
-                viewManager.showReadingView();
-                renderChapter(book, chapter);
-            } else {
-                viewManager.showMainView();
-            }
+            // Show main view immediately
+            viewManager.showMainView();
+
+            // Load full Bible data in background for better performance
+            loadBibleDataInBackground(state.language);
 
             // Check for path notification on load
             if (state.readingProgress[state.language].pathNotification) {

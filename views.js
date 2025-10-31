@@ -192,12 +192,13 @@ export class ViewManager {
             darkModeSwitch: document.getElementById('dark-mode-switch')
         };
 
-        // Swipe properties
+        // Swipe properties - optimized for mobile
         this.startX = 0;
         this.startY = 0;
         this.currentX = 0;
         this.currentY = 0;
-        this.swipeThreshold = 50; // Minimum pixels to register a swipe
+        this.swipeThreshold = window.innerWidth < 768 ? 40 : 50; // Smaller threshold on mobile
+        this.verticalThreshold = 30; // Maximum vertical movement allowed for horizontal swipe
         this.isSwiping = false;
     }
 
@@ -232,9 +233,16 @@ export class ViewManager {
 
     renderBookList(books, bookProgress, language = 'en') {
         const bookArray = Object.keys(books);
-        let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
-        bookArray.forEach((book, index) => {
-            const chaptersInBook = Object.keys(books[book]).length;
+        const isMobile = window.innerWidth < 768;
+
+        // For mobile, use simpler layout and limit initial render
+        const maxInitialRender = isMobile ? 20 : bookArray.length;
+        const initialBooks = bookArray.slice(0, maxInitialRender);
+
+        let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-total-books="${bookArray.length}" data-rendered-count="${initialBooks.length}">`;
+
+        initialBooks.forEach((book, index) => {
+            const chaptersInBook = books[book] || 1; // Use metadata or default to 1
             const chaptersRead = bookProgress[book] || 0;
             const progressPercentage = chaptersInBook > 0 ? (chaptersRead / chaptersInBook) * 100 : 0;
 
@@ -253,21 +261,101 @@ export class ViewManager {
                 </div>
             `;
         });
+
+        // Add load more button for mobile if there are more books
+        if (bookArray.length > maxInitialRender) {
+            html += `
+                <div class="load-more-container col-span-full flex justify-center py-4">
+                    <button class="load-more-btn liquidGlass-wrapper rounded-xl px-6 py-3 text-text-primary">
+                        <div class="liquidGlass-effect rounded-xl"></div>
+                        <div class="liquidGlass-tint rounded-xl"></div>
+                        <div class="liquidGlass-shine rounded-xl"></div>
+                        <span class="liquidGlass-text">${language === 'de' ? 'Mehr laden' : 'Load More'}</span>
+                    </button>
+                </div>
+            `;
+        }
+
         html += '</div>';
         this.domElements.bookListSection.innerHTML = html;
         this.domElements.bookListSection.setAttribute('lang', language);
 
-        // Animate book cards on render
+        // Animate book cards on render (reduced for mobile performance)
         const bookCards = this.domElements.bookListSection.querySelectorAll('.book-card');
+        const staggerDelay = isMobile ? 25 : 50; // Faster animation on mobile
+
         bookCards.forEach((card, index) => {
             card.style.opacity = '0';
             card.style.transform = 'scale(0.95)';
             setTimeout(() => {
-                card.style.transition = 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                card.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
                 card.style.opacity = '1';
                 card.style.transform = 'scale(1)';
-            }, index * 50); // Staggered delay
+            }, index * staggerDelay);
         });
+
+        // Bind load more functionality
+        const loadMoreBtn = this.domElements.bookListSection.querySelector('.load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => this.loadMoreBooks(bookArray, books, bookProgress, language, maxInitialRender));
+        }
+    }
+
+    loadMoreBooks(allBooks, books, bookProgress, language, startIndex) {
+        const isMobile = window.innerWidth < 768;
+        const batchSize = isMobile ? 15 : 30;
+        const endIndex = Math.min(startIndex + batchSize, allBooks.length);
+        const newBooks = allBooks.slice(startIndex, endIndex);
+
+        const container = this.domElements.bookListSection.querySelector('.grid');
+        const loadMoreContainer = container.querySelector('.load-more-container');
+
+        let html = '';
+        newBooks.forEach((book) => {
+            const chaptersInBook = books[book] || 1;
+            const chaptersRead = bookProgress[book] || 0;
+            const progressPercentage = chaptersInBook > 0 ? (chaptersRead / chaptersInBook) * 100 : 0;
+
+            html += `
+                <div class="book-card liquidGlass-wrapper rounded-xl" data-book="${book}" style="opacity: 0; transform: scale(0.95);">
+                    <div class="liquidGlass-effect rounded-xl"></div>
+                    <div class="liquidGlass-tint rounded-xl"></div>
+                    <div class="liquidGlass-shine rounded-xl"></div>
+                    <a class="book-link liquidGlass-text block p-5 transition-transform active:scale-[0.98]" href="#">
+            <h3 class="text-lg font-semibold text-text-primary truncate">${book}</h3>
+            <p class="text-sm text-text-secondary mt-1">${chaptersInBook} ${language === 'de' ? 'Kapitel' : 'Chapters'}</p>
+            <div class="mt-4 h-1.5 w-full rounded-full bg-black/5 dark:bg-dark-divider-faint overflow-hidden">
+                            <div class="h-1.5 rounded-full ${progressPercentage === 100 ? 'finished-progress' : 'bg-gradient-to-r from-gold-accent to-gold-accent-light'}" style="width: ${progressPercentage}%"></div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        });
+
+        // Insert new books before load more button
+        loadMoreContainer.insertAdjacentHTML('beforebegin', html);
+
+        // Update rendered count
+        container.setAttribute('data-rendered-count', endIndex);
+
+        // Animate new cards
+        const newCards = container.querySelectorAll('.book-card:not([style*="opacity: 1"])');
+        newCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, index * 25);
+        });
+
+        // Remove load more button if all books are loaded
+        if (endIndex >= allBooks.length) {
+            loadMoreContainer.remove();
+        } else {
+            // Update load more button to load next batch
+            const loadMoreBtn = loadMoreContainer.querySelector('.load-more-btn');
+            loadMoreBtn.addEventListener('click', () => this.loadMoreBooks(allBooks, books, bookProgress, language, endIndex));
+        }
     }
 
     renderChapter(book, chapter, chapterData, language = 'en') {
@@ -448,7 +536,12 @@ export class ViewManager {
             const diffX = this.currentX - this.startX;
             const diffY = this.currentY - this.startY;
 
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > this.swipeThreshold) {
+            // Only trigger swipe if horizontal movement is greater than vertical movement
+            // and exceeds thresholds (prevent accidental swipes during scrolling)
+            if (Math.abs(diffX) > Math.abs(diffY) &&
+                Math.abs(diffX) > this.swipeThreshold &&
+                Math.abs(diffY) < this.verticalThreshold) {
+
                 this.isSwiping = true;
                 let direction = '';
                 if (diffX > 0) {

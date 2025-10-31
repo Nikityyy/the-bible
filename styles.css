@@ -18,6 +18,7 @@ body {
   min-height: 100dvh;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overflow: hidden;
 }
 
 .dark body {
@@ -39,7 +40,7 @@ body {
 }
 
 
-/* LiquidGlass Effect */
+/* LiquidGlass Effect - Optimized for mobile */
 .liquidGlass-wrapper {
   position: relative;
   display: flex;
@@ -53,9 +54,9 @@ body {
   position: absolute;
   z-index: 0;
   inset: 0;
-  backdrop-filter: blur(3px);
   overflow: hidden;
   pointer-events: none;
+    backdrop-filter: blur(3px);
 }
 
 .liquidGlass-tint {
@@ -111,6 +112,29 @@ a,
 button {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 768px) {
+
+  button,
+  a,
+  .book-link {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  /* Better touch feedback */
+  .book-card,
+  .path-book-card {
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  }
+
+  .book-card:active,
+  .path-book-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* Interactive Elements */

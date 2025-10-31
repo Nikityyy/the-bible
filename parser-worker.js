@@ -5,16 +5,35 @@ importScripts('./parser.js');
 const parser = new BibleParser();
 
 self.onmessage = async function (e) {
-    const { url, language } = e.data;
+    const { url, language, metadataOnly, bookOnly, background } = e.data;
 
     try {
-        self.postMessage({ type: 'progress', message: 'Fetching and decompressing text...' });
-        const text = await parser.fetchText(url);
+        if (metadataOnly) {
+            // Load only book metadata for navigation
+            self.postMessage({ type: 'progress', message: 'Loading book metadata...' });
+            const text = await parser.fetchText(url);
+            const metadata = parser.parseBookMetadata(text, language);
+            self.postMessage({ type: 'result', metadata });
+        } else if (bookOnly) {
+            // Load specific book data
+            self.postMessage({ type: 'progress', message: 'Loading book data...' });
+            const text = await parser.fetchText(url);
+            const bookData = parser.parseSpecificBook(text, language, bookOnly);
+            self.postMessage({ type: 'result', bookData });
+        } else {
+            // Load full Bible data
+            if (!background) {
+                self.postMessage({ type: 'progress', message: 'Fetching and decompressing text...' });
+            }
+            const text = await parser.fetchText(url);
 
-        self.postMessage({ type: 'progress', message: 'Parsing Bible data...' });
-        const bibleData = parser.parseBibleText(text, language);
+            if (!background) {
+                self.postMessage({ type: 'progress', message: 'Parsing Bible data...' });
+            }
+            const bibleData = parser.parseBibleText(text, language);
 
-        self.postMessage({ type: 'result', bibleData });
+            self.postMessage({ type: 'result', bibleData });
+        }
     } catch (error) {
         self.postMessage({ type: 'error', error: error.message });
     }
