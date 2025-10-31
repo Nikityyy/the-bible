@@ -30,31 +30,6 @@ body {
     'opsz' 24;
 }
 
-/* View Transitions */
-.view-main {
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
-}
-
-.view-reading {
-  transform: translateX(100%);
-  display: none;
-  pointer-events: none;
-  opacity: 0;
-}
-
-body.reading-active .view-main {
-  transform: translateX(-100%);
-  display: none;
-  opacity: 0;
-  pointer-events: none;
-}
-
-body.reading-active .view-reading {
-  transform: translateX(0);
-  display: flex;
-  opacity: 1;
-  pointer-events: auto;
-}
 
 /* LiquidGlass Effect */
 .liquidGlass-wrapper {
@@ -87,7 +62,7 @@ body.reading-active .view-reading {
   z-index: 2;
   overflow: hidden;
   box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
-             inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .liquidGlass-text {
@@ -130,39 +105,67 @@ span:has(.book-chapter-label),
 
 /* Swipe Animations */
 @keyframes swipe-out-left {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(-20%); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(-20%);
+    opacity: 0;
+  }
 }
 
 @keyframes swipe-out-right {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(20%); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(20%);
+    opacity: 0;
+  }
 }
 
 @keyframes swipe-in-left {
-    from { transform: translateX(20%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(20%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes swipe-in-right {
-    from { transform: translateX(-20%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(-20%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .swipe-out-left {
-    animation: swipe-out-left 0.2s ease-out forwards;
+  animation: swipe-out-left 0.2s ease-out forwards;
 }
 
 .swipe-out-right {
-    animation: swipe-out-right 0.2s ease-out forwards;
+  animation: swipe-out-right 0.2s ease-out forwards;
 }
 
 .swipe-in-left {
-    animation: swipe-in-left 0.2s ease-out forwards;
+  animation: swipe-in-left 0.2s ease-out forwards;
 }
 
 .swipe-in-right {
-    animation: swipe-in-right 0.2s ease-out forwards;
+  animation: swipe-in-right 0.2s ease-out forwards;
 }
 
 /* ==========================================================================
@@ -172,4 +175,34 @@ span:has(.book-chapter-label),
 /* Loading Overlay */
 #loading-overlay {
   display: none;
+}
+
+/* Overscroll Bounce Effect */
+.overscroll-wrapper {
+  transition: transform 0.2s;
+}
+
+/* Pure JS View Transitions */
+.view-main.transition-out {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.view-reading.transition-in {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view-main.transition-in {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view-reading.transition-out {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
 }

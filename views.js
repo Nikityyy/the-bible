@@ -51,20 +51,42 @@ export class ViewManager {
         this.currentY = 0;
         this.swipeThreshold = 50; // Minimum pixels to register a swipe
         this.isSwiping = false;
+
+        this.initOverscrollBounce();
     }
 
     showMainView() {
-        document.body.classList.remove('reading-active');
+        this.domElements.mainView.classList.remove('transition-out');
+        this.domElements.mainView.classList.add('transition-in');
+        this.domElements.readingView.classList.remove('transition-in');
+        this.domElements.readingView.classList.add('transition-out');
+
+        this.domElements.mainView.style.display = 'flex';
+        this.domElements.readingView.style.display = 'flex'; // Keep it flex during transition
+
+        setTimeout(() => {
+            this.domElements.readingView.style.display = 'none';
+        }, 500); // Match transition duration
     }
 
     showReadingView() {
-        document.body.classList.add('reading-active');
+        this.domElements.mainView.classList.remove('transition-in');
+        this.domElements.mainView.classList.add('transition-out');
+        this.domElements.readingView.classList.remove('transition-out');
+        this.domElements.readingView.classList.add('transition-in');
+
+        this.domElements.mainView.style.display = 'flex'; // Keep it flex during transition
+        this.domElements.readingView.style.display = 'flex';
+
+        setTimeout(() => {
+            this.domElements.mainView.style.display = 'none';
+        }, 500); // Match transition duration
     }
 
     renderBookList(books, bookProgress, language = 'en') {
         const bookArray = Object.keys(books);
         let html = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
-        bookArray.forEach((book) => {
+        bookArray.forEach((book, index) => {
             const chaptersInBook = Object.keys(books[book]).length;
             const chaptersRead = bookProgress[book] || 0;
             const progressPercentage = chaptersInBook > 0 ? (chaptersRead / chaptersInBook) * 100 : 0;
@@ -87,6 +109,18 @@ export class ViewManager {
         html += '</div>';
         this.domElements.bookListSection.innerHTML = html;
         this.domElements.bookListSection.setAttribute('lang', language);
+
+        // Animate book cards on render
+        const bookCards = this.domElements.bookListSection.querySelectorAll('.book-card');
+        bookCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, index * 50); // Staggered delay
+        });
     }
 
     renderChapter(book, chapter, chapterData, language = 'en') {
@@ -313,5 +347,102 @@ export class ViewManager {
         const modalTitle = this.domElements.languageModal.querySelector('#modal-title');
         if (modalTitle) modalTitle.textContent = t.selectLanguage;
         if (this.domElements.closeModalButton) this.domElements.closeModalButton.textContent = t.cancel;
+    }
+
+    initOverscrollBounce() {
+        const scrollAreas = [
+            this.domElements.mainView.querySelector('main'),
+            this.domElements.readingMain
+        ];
+
+        scrollAreas.forEach(scrollContainer => {
+            if (!scrollContainer) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('overscroll-wrapper');
+            while (scrollContainer.firstChild) {
+                wrapper.appendChild(scrollContainer.firstChild);
+            }
+            scrollContainer.appendChild(wrapper);
+
+            let startY = 0;
+            let isDragging = false;
+            let rafId = null;
+
+            scrollContainer.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].pageY;
+                isDragging = true;
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+            }, { passive: true });
+
+            scrollContainer.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+
+                const currentY = e.touches[0].pageY;
+                const deltaY = currentY - startY;
+
+                const scrollTop = scrollContainer.scrollTop;
+                const scrollHeight = scrollContainer.scrollHeight;
+                const clientHeight = scrollContainer.clientHeight;
+
+                if (
+                    (scrollTop <= 0 && deltaY > 0) ||
+                    (Math.abs(scrollHeight - clientHeight - scrollTop) < 1 && deltaY < 0)
+                ) {
+                    if (e.cancelable) {
+                        e.preventDefault();
+                    }
+                    const resistance = 2.5;
+                    const pullDistance = deltaY / resistance;
+
+                    rafId = requestAnimationFrame(() => {
+                        wrapper.style.transform = `translateY(${pullDistance}px)`;
+                    });
+                }
+            }, { passive: false });
+
+            const release = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+
+                const currentTransform = new DOMMatrix(getComputedStyle(wrapper).transform);
+                if (currentTransform.m42 !== 0) {
+                    // Custom spring animation
+                    let velocity = 0;
+                    let position = currentTransform.m42;
+                    const target = 0;
+                    const stiffness = 0.3; // Adjust for desired springiness
+                    const damping = 0.8; // Adjust for desired damping
+
+                    const animateSpring = () => {
+                        const displacement = target - position;
+                        const acceleration = stiffness * displacement - damping * velocity;
+                        velocity += acceleration;
+                        position += velocity;
+
+                        if (Math.abs(displacement) < 0.1 && Math.abs(velocity) < 0.1) {
+                            position = target;
+                            wrapper.style.transform = `translateY(${position}px)`;
+                            return;
+                        }
+
+                        wrapper.style.transform = `translateY(${position}px)`;
+                        requestAnimationFrame(animateSpring);
+                    };
+                    requestAnimationFrame(animateSpring);
+                }
+            };
+
+            scrollContainer.addEventListener('touchend', release);
+            scrollContainer.addEventListener('touchcancel', release);
+        });
     }
 }
