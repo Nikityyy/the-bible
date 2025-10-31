@@ -13,12 +13,14 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #F9F9FB; /* Light mode default */
+  background-color: #F9F9FB;
+  /* Light mode default */
   min-height: 100dvh;
 }
 
 .dark body {
-  background-color: #121212; /* Dark mode background */
+  background-color: #121212;
+  /* Dark mode background */
 }
 
 /* ==========================================================================
@@ -57,11 +59,13 @@ body {
   z-index: 1;
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.10); /* Light mode tint */
+  background: rgba(255, 255, 255, 0.10);
+  /* Light mode tint */
 }
 
 .dark .liquidGlass-tint {
-  background: rgba(30, 30, 30, 0.10); /* Dark mode tint */
+  background: rgba(30, 30, 30, 0.10);
+  /* Dark mode tint */
 }
 
 .liquidGlass-shine {
@@ -70,12 +74,14 @@ body {
   z-index: 2;
   overflow: hidden;
   box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
-    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5); /* Light mode shine */
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+  /* Light mode shine */
 }
 
 .dark .liquidGlass-shine {
   box-shadow: inset 2px 2px 1px 0 rgba(60, 60, 60, 0.5),
-    inset -1px -1px 1px 1px rgba(60, 60, 60, 0.5); /* Dark mode shine */
+    inset -1px -1px 1px 1px rgba(60, 60, 60, 0.5);
+  /* Dark mode shine */
 }
 
 .liquidGlass-text {
@@ -107,26 +113,32 @@ header {
 span:has(.book-chapter-label),
 .book-chapter-label {
   text-align: center;
-  color: #1C1C1E; /* Light mode text */
+  line-height: 1.2;
+  color: #1C1C1E;
+  /* Light mode text */
 }
 
 .dark span:has(.book-chapter-label),
 .dark .book-chapter-label {
-  color: #E0E0E0; /* Dark mode text */
+  color: #E0E0E0;
+  /* Dark mode text */
 }
 
 .dark .text-text-primary {
-  color: var(--tw-colors-dark-text-primary); /* Ensure primary text is light in dark mode */
+  color: var(--tw-colors-dark-text-primary);
+  /* Ensure primary text is light in dark mode */
 }
 
 .chapter-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6E6E73; /* Light mode text */
+  color: #6E6E73;
+  /* Light mode text */
 }
 
 .dark .chapter-label {
-  color: #A0A0A0; /* Dark mode text */
+  color: #A0A0A0;
+  /* Dark mode text */
 }
 
 /* Swipe Animations */
@@ -257,7 +269,8 @@ span:has(.book-chapter-label),
 .path-book-card.completed {
   opacity: 1;
   filter: grayscale(0%);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); /* Subtle gold glow */
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  /* Subtle gold glow */
   transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
