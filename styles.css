@@ -218,6 +218,7 @@ span:has(.book-chapter-label),
 /* Overscroll Bounce Effect */
 .overscroll-wrapper {
   transition: transform 0.2s;
+  pointer-events: none;
 }
 
 /* Pure JS View Transitions - Removed for instant switching */
