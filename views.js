@@ -236,9 +236,7 @@ export class ViewManager {
         const isMobile = window.innerWidth < 768;
 
         // For mobile, use simpler layout and limit initial render
-        // const maxInitialRender = isMobile ? 20 : bookArray.length;
-        // for now default because loading is bugged and likely fast enough
-        const maxInitialRender = bookArray.length;
+        const maxInitialRender = isMobile ? 20 : bookArray.length;
         const initialBooks = bookArray.slice(0, maxInitialRender);
 
         let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-total-books="${bookArray.length}" data-rendered-count="${initialBooks.length}">`;
@@ -307,7 +305,11 @@ export class ViewManager {
         // Bind load more functionality
         const loadMoreBtn = this.domElements.bookListSection.querySelector('.load-more-btn');
         if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => this.loadMoreBooks(bookArray, books, bookProgress, language, maxInitialRender));
+            loadMoreBtn.addEventListener('click', () => {
+                const container = this.domElements.bookListSection.querySelector('.grid');
+                const currentRendered = parseInt(container.getAttribute('data-rendered-count') || maxInitialRender.toString());
+                this.loadMoreBooks(bookArray, books, bookProgress, language, currentRendered);
+            });
         }
     }
 
@@ -319,6 +321,11 @@ export class ViewManager {
 
         const container = this.domElements.bookListSection.querySelector('.grid');
         const loadMoreContainer = container.querySelector('.load-more-container');
+
+        // Safety check - if no load more container, don't proceed
+        if (!loadMoreContainer) {
+            return;
+        }
 
         let html = '';
         newBooks.forEach((book) => {
@@ -370,9 +377,16 @@ export class ViewManager {
         if (endIndex >= allBooks.length) {
             loadMoreContainer.remove();
         } else {
-            // Update load more button to load next batch
+            // Update load more button to load next batch (remove old listener first)
             const loadMoreBtn = loadMoreContainer.querySelector('.load-more-btn');
-            loadMoreBtn.addEventListener('click', () => this.loadMoreBooks(allBooks, books, bookProgress, language, endIndex));
+            const newLoadMoreHandler = () => {
+                const container = this.domElements.bookListSection.querySelector('.grid');
+                const currentRendered = parseInt(container.getAttribute('data-rendered-count') || endIndex.toString());
+                this.loadMoreBooks(allBooks, books, bookProgress, language, currentRendered);
+            };
+            loadMoreBtn.removeEventListener('click', loadMoreBtn._lastLoadMoreHandler);
+            loadMoreBtn.addEventListener('click', newLoadMoreHandler);
+            loadMoreBtn._lastLoadMoreHandler = newLoadMoreHandler;
         }
     }
 

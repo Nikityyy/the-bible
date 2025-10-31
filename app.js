@@ -136,13 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
         stateManager.setCurrentPage('main');
         viewManager.showMainView();
         const state = stateManager.getState();
-        viewManager.renderBookList(bibleData, state.readingProgress[state.language].books, state.language);
-        updateContinueReading();
-        // Scroll main view to top
-        const mainViewMain = viewManager.domElements.mainView?.querySelector('main');
-        if (mainViewMain) {
-            mainViewMain.scrollTop = 0;
+
+        // Only re-render book list if it's not already rendered or if data has changed
+        const bookListContainer = viewManager.domElements.bookListSection;
+        const existingBooks = bookListContainer.querySelectorAll('.book-card').length;
+
+        if (existingBooks === 0) {
+            // No books rendered yet, render them
+            const booksData = bookMetadata && Object.keys(bookMetadata).length > 0 ? bookMetadata : bibleData;
+            viewManager.renderBookList(booksData, state.readingProgress[state.language].books, state.language);
         }
+
+        updateContinueReading();
+        // Don't scroll to top when switching back - preserve user's position
     }
 
     function handlePathClick() {
