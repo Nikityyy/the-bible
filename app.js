@@ -1,6 +1,7 @@
 import { StateManager } from './state.js';
 import { ViewManager } from './views.js';
 import { bibleDB } from './db.js';
+import { triggerHapticFeedback } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const stateManager = new StateManager();
@@ -42,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         stateManager.setCurrentPage('reading');
         viewManager.showReadingView();
         renderChapter(book, chapter);
+        // Scroll reading view to top
+        if (viewManager.domElements.readingMain) {
+            viewManager.domElements.readingMain.scrollTop = 0;
+        }
     }
 
     function handleNavigateChapter(direction) {
@@ -53,6 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
             stateManager.updateReadingProgress(state.language, { book, chapter: newChapter });
             renderChapter(book, newChapter);
         }
+
+        // Check if the book is fully read after navigating
+        if (newChapter === totalChapters) {
+            const currentBookProgress = state.readingProgress[state.language].books[book] || 0;
+            if (currentBookProgress === totalChapters) {
+                const langProgress = state.readingProgress[state.language];
+                langProgress.pathNotification = true;
+                stateManager.updateState({}); // Trigger save and listeners
+                viewManager.showPathNotification();
+            }
+        }
     }
 
     function handleContinueReading() {
@@ -62,6 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stateManager.setCurrentPage('reading');
             viewManager.showReadingView();
             renderChapter(book, chapter);
+            // Scroll reading view to top
+            if (viewManager.domElements.readingMain) {
+                viewManager.domElements.readingMain.scrollTop = 0;
+            }
         }
     }
 
@@ -71,6 +91,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = stateManager.getState();
         viewManager.renderBookList(bibleData, state.readingProgress[state.language].books, state.language);
         updateContinueReading();
+        // Scroll main view to top
+        const mainViewMain = viewManager.domElements.mainView?.querySelector('main');
+        if (mainViewMain) {
+            mainViewMain.scrollTop = 0;
+        }
+    }
+
+    function handlePathClick() {
+        stateManager.setCurrentPage('path');
+        viewManager.showPathView();
+        const state = stateManager.getState();
+        viewManager.renderPathView(bibleData, state.readingProgress[state.language].books, state.language);
+        if (state.readingProgress[state.language].pathNotification) {
+            const langProgress = state.readingProgress[state.language];
+            langProgress.pathNotification = false;
+            stateManager.updateState({}); // Trigger save and listeners
+            viewManager.hidePathNotification();
+        }
+        // Scroll path view to top
+        const pathViewMain = viewManager.domElements.pathView?.querySelector('main');
+        if (pathViewMain) {
+            pathViewMain.scrollTop = 0;
+        }
     }
 
     async function handleLanguageSwitch(newLanguage) {
@@ -79,13 +122,37 @@ document.addEventListener('DOMContentLoaded', () => {
             viewManager.hideSettingsModal();
             return;
         }
+
+        // Hide path notification when switching languages
+        viewManager.hidePathNotification();
+
         stateManager.switchLanguage(newLanguage);
         viewManager.hideSettingsModal();
         viewManager.showLoading('Loading Bible data...');
         try {
             await loadBibleData(newLanguage);
             viewManager.hideLoading();
-            viewManager.renderBookList(bibleData, state.readingProgress[newLanguage].books, newLanguage);
+
+            // Update UI texts (tab names, etc.) for the new language
+            viewManager.updateUITexts(newLanguage);
+
+            // Re-render content based on current view
+            if (state.currentPage === 'main') {
+                viewManager.renderBookList(bibleData, state.readingProgress[newLanguage].books, newLanguage);
+            } else if (state.currentPage === 'path') {
+                viewManager.renderPathView(bibleData, state.readingProgress[newLanguage].books, newLanguage);
+            } else if (state.currentPage === 'reading') {
+                const { book, chapter } = state.readingProgress[newLanguage].lastRead;
+                if (book && chapter) {
+                    renderChapter(book, chapter);
+                }
+            }
+
+            // Check path notification for the new language (regardless of current view)
+            if (state.readingProgress[newLanguage].pathNotification) {
+                viewManager.showPathNotification();
+            }
+
             updateContinueReading();
         } catch (error) {
             viewManager.hideLoading();
@@ -167,6 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
         viewManager.showLoading('Loading Bible data...');
         try {
             await loadBibleData(state.language);
+
+            // Update UI texts (tab names, etc.) for the current language
+            viewManager.updateUITexts(state.language);
+
             viewManager.renderBookList(bibleData, state.readingProgress[state.language].books, state.language);
 
             // Validate stored progress
@@ -184,8 +255,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewManager.showReadingView();
                 renderChapter(book, chapter);
             } else {
-                viewManager.showMainView();
+            viewManager.showMainView();
             }
+
+            // Check for path notification on load
+            if (state.readingProgress[state.language].pathNotification) {
+                viewManager.showPathNotification();
+            }
+
         } catch (error) {
             viewManager.hideLoading();
             viewManager.showError(error);
@@ -194,6 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Bind Events
     viewManager.bindBookListClick(handleBookClick);
+    document.querySelector('a[href="#path-view"]').addEventListener('click', (e) => {
+        e.preventDefault();
+        handlePathClick();
+    });
     const debouncedHandleNavigateChapter = debounce(handleNavigateChapter, 50);
 
     viewManager.bindNavigationClicks(
@@ -212,6 +293,29 @@ document.addEventListener('DOMContentLoaded', () => {
         handleLanguageSwitch,
         handleDarkModeToggle
     );
+
+    // Bind settings button in path view
+    if (viewManager.domElements.settingsButtonPath) {
+        viewManager.domElements.settingsButtonPath.addEventListener('click', () => {
+            triggerHapticFeedback();
+            viewManager.showSettingsModal();
+        });
+    }
+
+    // Bind navigation tabs in path view header
+    if (viewManager.domElements.readTabPathView) {
+        viewManager.domElements.readTabPathView.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleBackToMain(); // Navigates to main view (Read tab)
+        });
+    }
+
+    if (viewManager.domElements.pathTabPathView) {
+        viewManager.domElements.pathTabPathView.addEventListener('click', (e) => {
+            e.preventDefault();
+            handlePathClick(); // Stays on path view
+        });
+    }
 
     initializeApp();
 });

@@ -5,23 +5,159 @@ const translations = {
         continueReading: 'Continue Reading',
         theBible: 'The Bible',
         read: 'Read',
-        ask: 'Ask',
+        path: 'Path',
         loading: 'Loading...',
         selectLanguage: 'Select Language',
         cancel: 'Cancel',
         settings: 'Settings',
-        darkMode: 'Dark Mode'
+        darkMode: 'Dark Mode',
+        moments: {
+            Genesis: 'You began your journey.',
+            Exodus: 'You found freedom in the wilderness.',
+            Leviticus: 'You learned the sacred laws.',
+            Numbers: 'You journeyed through the desert.',
+            Deuteronomy: 'You remembered the covenant.',
+            Joshua: 'You entered the promised land.',
+            Judges: 'You witnessed the cycles of faith.',
+            Ruth: 'You found loyalty and love.',
+            '1 Samuel': 'You saw the rise of kings.',
+            '2 Samuel': 'You walked with King David.',
+            '1 Kings': 'You saw the kingdom divide.',
+            '2 Kings': 'You witnessed the fall of nations.',
+            '1 Chronicles': 'You traced the lineage of faith.',
+            '2 Chronicles': 'You saw the temple restored.',
+            Ezra: 'You rebuilt the house of God.',
+            Nehemiah: 'You restored the city walls.',
+            Esther: 'You found courage in the palace.',
+            Job: 'You endured with patience.',
+            Psalms: 'You found peace in Psalms.',
+            Proverbs: 'You gained wisdom for life.',
+            Ecclesiastes: 'You pondered life\'s meaning.',
+            'Song of Solomon': 'You celebrated divine love.',
+            Isaiah: 'You heard the prophet\'s call.',
+            Jeremiah: 'You wept with the prophet.',
+            Lamentations: 'You mourned with a broken heart.',
+            Ezekiel: 'You saw visions of glory.',
+            Daniel: 'You stood firm in faith.',
+            Hosea: 'You knew God\'s enduring love.',
+            Joel: 'You witnessed God\'s power.',
+            Amos: 'You heard the call for justice.',
+            Obadiah: 'You saw justice prevail.',
+            Jonah: 'You learned of God\'s compassion.',
+            Micah: 'You walked humbly with God.',
+            Nahum: 'You saw God\'s vengeance.',
+            Habakkuk: 'You questioned, then trusted.',
+            Zephaniah: 'You awaited the day of the Lord.',
+            Haggai: 'You rebuilt with purpose.',
+            Zechariah: 'You saw visions of hope.',
+            Malachi: 'You returned to the Lord.',
+            Matthew: 'You met the King of Kings.',
+            Mark: 'You followed the Servant.',
+            Luke: 'You discovered the Son of Man.',
+            John: 'You believed in the Son of God.',
+            Acts: 'You witnessed the Spirit\'s power.',
+            Romans: 'You understood grace and faith.',
+            '1 Corinthians': 'You learned of unity in Christ.',
+            '2 Corinthians': 'You found strength in weakness.',
+            Galatians: 'You embraced freedom in Christ.',
+            Ephesians: 'You discovered your identity in Christ.',
+            Philippians: 'You rejoiced in the Lord.',
+            Colossians: 'You found fullness in Christ.',
+            '1 Thessalonians': 'You hoped for His return.',
+            '2 Thessalonians': 'You stood firm in truth.',
+            '1 Timothy': 'You led with integrity.',
+            '2 Timothy': 'You persevered in faith.',
+            Titus: 'You lived a godly life.',
+            Philemon: 'You extended forgiveness.',
+            Hebrews: 'You saw Christ, our High Priest.',
+            James: 'You lived out your faith.',
+            '1 Peter': 'You stood firm in suffering.',
+            '2 Peter': 'You grew in grace and knowledge.',
+            '1 John': 'You knew God\'s love.',
+            '2 John': 'You walked in truth and love.',
+            '3 John': 'You supported the truth.',
+            Jude: 'You contended for the faith.',
+            Revelation: 'You saw the triumph of God.'
+        }
     },
     de: {
         continueReading: 'Weiterlesen',
         theBible: 'Die Bibel',
         read: 'Lesen',
-        ask: 'Fragen',
+        path: 'Pfad',
         loading: 'Laden...',
         selectLanguage: 'Sprache auswählen',
         cancel: 'Abbrechen',
         settings: 'Einstellungen',
-        darkMode: 'Dunkelmodus'
+        darkMode: 'Dunkelmodus',
+        moments: {
+            '1 Mose': 'Du hast deine Reise begonnen.',
+            '2 Mose': 'Du hast Freiheit in der Wildnis gefunden.',
+            '3 Mose': 'Du hast die heiligen Gesetze gelernt.',
+            '4 Mose': 'Du bist durch die Wüste gezogen.',
+            '5 Mose': 'Du hast den Bund in Erinnerung gerufen.',
+            Josua: 'Du hast das gelobte Land betreten.',
+            Richter: 'Du hast die Zyklen des Glaubens miterlebt.',
+            Rut: 'Du hast Loyalität und Liebe gefunden.',
+            '1 Samuel': 'Du hast den Aufstieg der Könige gesehen.',
+            '2 Samuel': 'Du bist mit König David gegangen.',
+            '1 Koenige': 'Du hast das geteilte Königreich gesehen.',
+            '2 Koenige': 'Du hast den Fall der Nationen miterlebt.',
+            '1 Chronik': 'Du hast die Abstammung des Glaubens verfolgt.',
+            '2 Chronik': 'Du hast den Tempel wiederhergestellt gesehen.',
+            Esra: 'Du hast das Haus Gottes wieder aufgebaut.',
+            Nehemia: 'Du hast die Stadtmauern wiederhergestellt.',
+            Ester: 'Du hast Mut im Palast gefunden.',
+            Job: 'Du hast mit Geduld ausgeharrt.',
+            Psalm: 'Du hast Frieden in den Psalmen gefunden.',
+            Sprueche: 'Du hast Weisheit für das Leben gewonnen.',
+            Prediger: 'Du hast über den Sinn des Lebens nachgedacht.',
+            Hohelied: 'Du hast die göttliche Liebe gefeiert.',
+            Jesaja: 'Du hast den Ruf des Propheten gehört.',
+            Jeremia: 'Du hast mit dem Propheten geweint.',
+            Klagelieder: 'Du hast mit gebrochenem Herzen getrauert.',
+            Hesekiel: 'Du hast Visionen der Herrlichkeit gesehen.',
+            Daniel: 'Du bist fest im Glauben geblieben.',
+            Hosea: 'Du hast Gottes unvergängliche Liebe gekannt.',
+            Joel: 'Du hast Gottes Macht miterlebt.',
+            Amos: 'Du hast den Ruf nach Gerechtigkeit gehört.',
+            Obadja: 'Du hast Gerechtigkeit siegen sehen.',
+            Jona: 'Du hast von Gottes Barmherzigkeit gelernt.',
+            Mica: 'Du bist demütig mit Gott gegangen.',
+            Nahum: 'Du hast Gottes Rache gesehen.',
+            Habakuk: 'Du hast gefragt, dann vertraut.',
+            Zephanja: 'Du hast den Tag des Herrn erwartet.',
+            Haggai: 'Du hast mit Absicht wieder aufgebaut.',
+            Sacharja: 'Du hast Visionen der Hoffnung gesehen.',
+            Maleachi: 'Du bist zum Herrn zurückgekehrt.',
+            Matthaeus: 'Du hast den König der Könige getroffen.',
+            Markus: 'Du bist dem Diener gefolgt.',
+            Lukas: 'Du hast den Menschensohn entdeckt.',
+            Johannes: 'Du hast an den Sohn Gottes geglaubt.',
+            Apostelgeschichte: 'Du hast die Kraft des Geistes miterlebt.',
+            Roemers: 'Du hast Gnade und Glauben verstanden.',
+            '1 Korinther': 'Du hast von der Einheit in Christus gelernt.',
+            '2 Korinther': 'Du hast Stärke in Schwachheit gefunden.',
+            Galater: 'Du hast die Freiheit in Christus angenommen.',
+            Epheser: 'Du hast deine Identität in Christus entdeckt.',
+            Philipper: 'Du hast dich im Herrn gefreut.',
+            Kolosser: 'Du hast Fülle in Christus gefunden.',
+            '1 Thessalonicher': 'Du hast auf Seine Wiederkunft gehofft.',
+            '2 Thessalonicher': 'Du bist fest in der Wahrheit geblieben.',
+            '1 Timotheus': 'Du hast mit Integrität geführt.',
+            '2 Timotheus': 'Du hast im Glauben ausgeharrt.',
+            Titus: 'Du hast ein gottgefälliges Leben geführt.',
+            Philemon: 'Du hast Vergebung gewährt.',
+            Hebraeer: 'Du hast Christus, unseren Hohenpriester, gesehen.',
+            Jakobus: 'Du hast deinen Glauben gelebt.',
+            '1 Petrus': 'Du bist im Leiden standhaft geblieben.',
+            '2 Petrus': 'Du bist in Gnade und Erkenntnis gewachsen.',
+            '1 Johannes': 'Du hast Gottes Liebe gekannt.',
+            '2 Johannes': 'Du bist in Wahrheit und Liebe gewandelt.',
+            '3 Johannes': 'Du hast die Wahrheit unterstützt.',
+            Judas: 'Du hast für den Glauben gekämpft.',
+            Offenbarung: 'Du hast den Triumph Gottes gesehen.'
+        }
     }
 };
 
@@ -30,9 +166,16 @@ export class ViewManager {
         this.domElements = {
             mainView: document.querySelector('.view-main'),
             readingView: document.querySelector('.view-reading'),
+            pathView: document.querySelector('.view-path'),
             readingMain: document.querySelector('.view-reading main'),
+            pathBookListSection: document.getElementById('path-book-list'),
+            pathNotification: document.getElementById('path-notification'),
             backToMainButton: document.querySelector('.view-reading header a'),
             settingsButton: document.getElementById('settings-button'),
+            settingsButtonPath: document.getElementById('settings-button-path'), // New settings button for path view
+            readTabPathView: document.querySelector('.view-path .liquidGlass-text .flex.items-center a[href="#bible-app"]'), // Read tab in path view
+            pathTabPathView: document.querySelector('.view-path .liquidGlass-text .flex.items-center a[href="#path-view"]'), // Path tab in path view
+            pathNotificationHeader: document.getElementById('path-notification-header'), // Notification in path view header
             bookListSection: document.getElementById('book-list'),
             continueReadingLink: document.querySelector('a[href="#reading-view"]'),
             continueReadingProgressBar: document.getElementById('continue-reading-progress-bar'),
@@ -60,32 +203,33 @@ export class ViewManager {
         this.initOverscrollBounce();
     }
 
+    _transitionTimeout = null;
+
+    _showView(activeView) {
+        const views = [this.domElements.mainView, this.domElements.readingView, this.domElements.pathView];
+        views.forEach(view => {
+            if (view === activeView) {
+                view.style.display = 'flex';
+                view.classList.remove('opacity-0', 'pointer-events-none');
+                view.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                view.style.display = 'none';
+                view.classList.remove('opacity-100', 'pointer-events-auto');
+                view.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+    }
+
     showMainView() {
-        this.domElements.mainView.classList.remove('transition-out');
-        this.domElements.mainView.classList.add('transition-in');
-        this.domElements.readingView.classList.remove('transition-in');
-        this.domElements.readingView.classList.add('transition-out');
-
-        this.domElements.mainView.style.display = 'flex';
-        this.domElements.readingView.style.display = 'flex'; // Keep it flex during transition
-
-        setTimeout(() => {
-            this.domElements.readingView.style.display = 'none';
-        }, 500); // Match transition duration
+        this._showView(this.domElements.mainView);
     }
 
     showReadingView() {
-        this.domElements.mainView.classList.remove('transition-in');
-        this.domElements.mainView.classList.add('transition-out');
-        this.domElements.readingView.classList.remove('transition-out');
-        this.domElements.readingView.classList.add('transition-in');
+        this._showView(this.domElements.readingView);
+    }
 
-        this.domElements.mainView.style.display = 'flex'; // Keep it flex during transition
-        this.domElements.readingView.style.display = 'flex';
-
-        setTimeout(() => {
-            this.domElements.mainView.style.display = 'none';
-        }, 500); // Match transition duration
+    showPathView() {
+        this._showView(this.domElements.pathView);
     }
 
     renderBookList(books, bookProgress, language = 'en') {
@@ -333,6 +477,63 @@ export class ViewManager {
         }
     }
 
+    renderPathView(bibleData, bookProgress, language = 'en') {
+        const t = translations[language];
+        const bookArray = Object.keys(bibleData);
+        let html = '';
+
+        bookArray.forEach((bookName) => {
+            const chaptersInBook = Object.keys(bibleData[bookName]).length;
+            const chaptersRead = bookProgress[bookName] || 0;
+            const isCompleted = chaptersRead === chaptersInBook && chaptersInBook > 0;
+            const momentText = t.moments[bookName] || '';
+
+            html += `
+                <div class="path-book-card liquidGlass-wrapper rounded-xl ${isCompleted ? 'completed' : 'uncompleted'}" data-book="${bookName}">
+                    <div class="liquidGlass-effect rounded-xl"></div>
+                    <div class="liquidGlass-tint rounded-xl"></div>
+                    <div class="liquidGlass-shine rounded-xl"></div>
+                    <div class="liquidGlass-text p-4 flex flex-col items-center justify-center text-center h-full">
+                        <h3 class="text-lg font-semibold text-text-primary truncate">${bookName}</h3>
+                        ${isCompleted ? `<p class="text-sm text-gold-accent mt-2">${momentText}</p>` : `<p class="text-sm text-text-secondary mt-1">${chaptersRead} / ${chaptersInBook} ${language === 'de' ? 'Kapitel' : 'Chapters'}</p>`}
+                    </div>
+                </div>
+            `;
+        });
+        this.domElements.pathBookListSection.innerHTML = html;
+        this.domElements.pathBookListSection.setAttribute('lang', language);
+
+        // Animate book cards on render
+        const bookCards = this.domElements.pathBookListSection.querySelectorAll('.path-book-card');
+        bookCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, index * 50); // Staggered delay
+        });
+    }
+
+    showPathNotification() {
+        if (this.domElements.pathNotification) {
+            this.domElements.pathNotification.classList.remove('hidden');
+        }
+        if (this.domElements.pathNotificationHeader) {
+            this.domElements.pathNotificationHeader.classList.remove('hidden');
+        }
+    }
+
+    hidePathNotification() {
+        if (this.domElements.pathNotification) {
+            this.domElements.pathNotification.classList.add('hidden');
+        }
+        if (this.domElements.pathNotificationHeader) {
+            this.domElements.pathNotificationHeader.classList.add('hidden');
+        }
+    }
+
     updateUITexts(language) {
         const t = translations[language];
         // Update Continue Reading label
@@ -344,9 +545,13 @@ export class ViewManager {
         // Update Read tab
         const readBtn = document.querySelector('a[href="#bible-app"] span');
         if (readBtn) readBtn.textContent = t.read;
-        // Update Ask tab
-        const askBtn = document.querySelector('a[href="#"] span');
-        if (askBtn) askBtn.textContent = t.ask;
+        // Update Path tab in main view
+        const pathBtn = document.querySelector('a[href="#path-view"] span:first-child');
+        if (pathBtn) pathBtn.textContent = t.path;
+        // Update Read tab in path view
+        if (this.domElements.readTabPathView) this.domElements.readTabPathView.querySelector('span').textContent = t.read;
+        // Update Path tab in path view
+        if (this.domElements.pathTabPathView) this.domElements.pathTabPathView.querySelector('span').textContent = t.path;
         // Update loading message (only if default)
         const loadingMsg = document.querySelector('.loading-message');
         if (loadingMsg && loadingMsg.textContent === translations.en.loading) loadingMsg.textContent = t.loading;
@@ -364,7 +569,8 @@ export class ViewManager {
     initOverscrollBounce() {
         const scrollAreas = [
             this.domElements.mainView.querySelector('main'),
-            this.domElements.readingMain
+            this.domElements.readingMain,
+            this.domElements.pathView.querySelector('main')
         ];
 
         scrollAreas.forEach(scrollContainer => {

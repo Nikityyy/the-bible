@@ -208,7 +208,8 @@ span:has(.book-chapter-label),
   transition: transform 0.2s;
 }
 
-/* Pure JS View Transitions */
+/* Pure JS View Transitions - Removed for instant switching */
+/*
 .view-main.transition-out {
   transform: translateX(-100%);
   opacity: 0;
@@ -231,4 +232,35 @@ span:has(.book-chapter-label),
   transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
+}
+
+.view-path.transition-in {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.view-path.transition-out {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+*/
+
+/* Path Book Card Styles */
+.path-book-card.uncompleted {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.path-book-card.completed {
+  opacity: 1;
+  filter: grayscale(0%);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); /* Subtle gold glow */
+  transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.path-book-card.completed:hover {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
 }

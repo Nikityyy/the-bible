@@ -7,11 +7,13 @@ export class StateManager {
             readingProgress: {
                 en: {
                     lastRead: { book: 'Genesis', chapter: 1 },
-                    books: { 'Genesis': 1 }
+                    books: { 'Genesis': 1 },
+                    pathNotification: false // Language-specific path notification
                 },
                 de: {
                     lastRead: { book: '1. Mose', chapter: 1 },
-                    books: { '1. Mose': 1 }
+                    books: { '1. Mose': 1 },
+                    pathNotification: false // Language-specific path notification
                 }
             }
         };
@@ -63,6 +65,16 @@ export class StateManager {
         const savedState = localStorage.getItem('bibleAppState');
         if (savedState) {
             const loadedState = JSON.parse(savedState);
+
+            // Handle backward compatibility: migrate global pathNotification to language-specific
+            if (loadedState.pathNotification !== undefined) {
+                // If there's a global pathNotification, apply it to the current language
+                const currentLang = loadedState.language || this.state.language;
+                if (this.state.readingProgress[currentLang]) {
+                    this.state.readingProgress[currentLang].pathNotification = loadedState.pathNotification;
+                }
+                delete loadedState.pathNotification; // Remove the old global property
+            }
 
             // Deep merge for readingProgress
             if (loadedState.readingProgress) {

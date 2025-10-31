@@ -55,4 +55,9 @@ tailwind.config = {
       },
     },
   },
+  plugins: [
+    tailwind.plugin(function ({ addVariant }) {
+      addVariant('hocus', ['&:hover', '&:focus'])
+    }),
+  ],
 }
