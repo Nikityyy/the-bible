@@ -49,12 +49,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getCanonicalBookOrder(bibleData) {
+        return Object.keys(bibleData);
+    }
+
     function handleNavigateChapter(direction) {
         const state = stateManager.getState();
         const { book, chapter } = state.readingProgress[state.language].lastRead;
-        const newChapter = parseInt(chapter, 10) + direction;
+        const currentChapter = parseInt(chapter, 10);
         const totalChapters = Object.keys(bibleData[book]).length;
-        if (newChapter >= 1 && newChapter <= totalChapters) {
+        const newChapter = currentChapter + direction;
+
+        // Check if we need to navigate to a different book
+        if (newChapter < 1) {
+            // Going back from first chapter - navigate to previous book
+            const bookOrder = getCanonicalBookOrder(bibleData);
+            const currentBookIndex = bookOrder.indexOf(book);
+            if (currentBookIndex > 0) {
+                const prevBook = bookOrder[currentBookIndex - 1];
+                const prevBookTotalChapters = Object.keys(bibleData[prevBook]).length;
+                stateManager.updateReadingProgress(state.language, { book: prevBook, chapter: prevBookTotalChapters });
+                renderChapter(prevBook, prevBookTotalChapters);
+                return;
+            }
+        } else if (newChapter > totalChapters) {
+            // Going forward from last chapter - navigate to next book
+            const bookOrder = getCanonicalBookOrder(bibleData);
+            const currentBookIndex = bookOrder.indexOf(book);
+            if (currentBookIndex < bookOrder.length - 1) {
+                const nextBook = bookOrder[currentBookIndex + 1];
+                stateManager.updateReadingProgress(state.language, { book: nextBook, chapter: 1 });
+                renderChapter(nextBook, 1);
+                return;
+            }
+        } else {
+            // Normal chapter navigation within the same book
             stateManager.updateReadingProgress(state.language, { book, chapter: newChapter });
             renderChapter(book, newChapter);
         }
@@ -166,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = stateManager.getState();
         viewManager.renderChapter(book, chapter, chapterData, state.language);
         const totalChapters = bibleData[book] ? Object.keys(bibleData[book]).length : 0;
-        viewManager.updateNavigation(book, chapter, totalChapters, state.language);
+        viewManager.updateNavigation(book, chapter, totalChapters, state.language, bibleData, getCanonicalBookOrder(bibleData));
     }
 
     function updateContinueReading() {
@@ -255,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewManager.showReadingView();
                 renderChapter(book, chapter);
             } else {
-            viewManager.showMainView();
+                viewManager.showMainView();
             }
 
             // Check for path notification on load

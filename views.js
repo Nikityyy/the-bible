@@ -294,31 +294,54 @@ export class ViewManager {
         this.domElements.readingHeader.innerHTML = language === 'de' ? `<span class="book-chapter-label">${book}<br><span class="chapter-label">Kapitel ${chapter}</span></span>` : `<span class="book-chapter-label">${book}<br><span class="chapter-label">Chapter ${chapter}</span></span>`;
     }
 
-    updateNavigation(book, chapter, totalChapters, language) {
+    updateNavigation(book, chapter, totalChapters, language, bibleData = {}, canonicalBookOrder = {}) {
         const currentChapter = parseInt(chapter, 10);
         const prevChapterIcon = this.domElements.prevChapterButton.querySelector('span:first-child');
         const nextChapterIcon = this.domElements.nextChapterButton.querySelector('span:last-child');
 
+        const bookOrder = canonicalBookOrder;
+        const currentBookIndex = bookOrder.indexOf(book);
+
         if (currentChapter > 1) {
+            // Normal previous chapter navigation
             this.domElements.prevChapterButton.style.pointerEvents = 'auto';
             this.domElements.prevChapterButton.style.opacity = '1';
             prevChapterIcon.style.display = 'inline';
             this.domElements.prevChapterLabel.innerHTML = language === 'de' ? `<span class="book-chapter-label">${book}<br><span class="chapter-label">Kapitel ${currentChapter - 1}</span></span>` : `<span class="book-chapter-label">${book}<br><span class="chapter-label">Chapter ${currentChapter - 1}</span></span>`;
+        } else if (currentBookIndex > 0) {
+            // At first chapter but can navigate to previous book
+            this.domElements.prevChapterButton.style.pointerEvents = 'auto';
+            this.domElements.prevChapterButton.style.opacity = '1';
+            prevChapterIcon.style.display = 'inline';
+            const prevBook = bookOrder[currentBookIndex - 1];
+            // Get the total chapters in the previous book
+            const prevBookTotalChapters = Object.keys(bibleData[prevBook] || {}).length;
+            this.domElements.prevChapterLabel.innerHTML = language === 'de' ? `<span class="book-chapter-label">${prevBook}<br><span class="chapter-label">Kapitel ${prevBookTotalChapters}</span></span>` : `<span class="book-chapter-label">${prevBook}<br><span class="chapter-label">Chapter ${prevBookTotalChapters}</span></span>`;
         } else {
+            // At first chapter of first book - show inspirational start message
             this.domElements.prevChapterButton.style.pointerEvents = 'none';
             this.domElements.prevChapterButton.style.opacity = '0.5';
-            this.domElements.prevChapterLabel.textContent = language === 'de' ? 'Erstes Kapitel' : 'First Chapter';
+            this.domElements.prevChapterLabel.textContent = language === 'de' ? 'Reise beginnt' : 'Journey begins';
         }
 
         if (currentChapter < totalChapters) {
+            // Normal next chapter navigation
             this.domElements.nextChapterButton.style.pointerEvents = 'auto';
             this.domElements.nextChapterButton.style.opacity = '1';
             nextChapterIcon.style.display = 'inline';
             this.domElements.nextChapterLabel.innerHTML = language === 'de' ? `<span class="book-chapter-label">${book}<br><span class="chapter-label">Kapitel ${currentChapter + 1}</span></span>` : `<span class="book-chapter-label">${book}<br><span class="chapter-label">Chapter ${currentChapter + 1}</span></span>`;
+        } else if (currentBookIndex < bookOrder.length - 1) {
+            // At last chapter but can navigate to next book
+            this.domElements.nextChapterButton.style.pointerEvents = 'auto';
+            this.domElements.nextChapterButton.style.opacity = '1';
+            nextChapterIcon.style.display = 'inline';
+            const nextBook = bookOrder[currentBookIndex + 1];
+            this.domElements.nextChapterLabel.innerHTML = language === 'de' ? `<span class="book-chapter-label">${nextBook}<br><span class="chapter-label">Kapitel 1</span></span>` : `<span class="book-chapter-label">${nextBook}<br><span class="chapter-label">Chapter 1</span></span>`;
         } else {
+            // At last chapter of last book - show inspirational end message
             this.domElements.nextChapterButton.style.pointerEvents = 'none';
             this.domElements.nextChapterButton.style.opacity = '0.5';
-            this.domElements.nextChapterLabel.textContent = language === 'de' ? 'Letztes Kapitel' : 'Last Chapter';
+            this.domElements.nextChapterLabel.textContent = language === 'de' ? 'Reise endet' : 'Journey ends';
         }
     }
 
