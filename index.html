@@ -18,9 +18,9 @@
     rel="stylesheet" />
 </head>
 
-<body class="bg-background-base font-sans text-text-primary overflow-hidden">
+<body class="bg-background-base font-sans text-text-primary overflow-hidden dark:bg-dark-background-base dark:text-dark-text-primary">
   <div id="loading-overlay" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-xl p-6 shadow-lg flex items-center space-x-4">
+    <div class="bg-white rounded-xl p-6 shadow-lg flex items-center space-x-4 dark:bg-dark-surface-white">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-accent"></div>
       <p class="loading-message text-text-primary">Loading...</p>
     </div>
@@ -55,7 +55,9 @@
               <div class="liquidGlass-tint rounded-full"></div>
               <div class="liquidGlass-shine rounded-full"></div>
               <div class="liquidGlass-text">
-                <button id="language-switcher" class="p-2 text-sm font-medium text-text-secondary">EN</button>
+                <button id="settings-button" class="p-2 text-sm font-medium text-text-secondary size-[50px]">
+                  <span class="material-symbols-outlined text-2xl">settings</span>
+                </button>
               </div>
             </div>
           </div>
@@ -90,7 +92,7 @@
         </section>
       </main>
     </div>
-    <div class="view-reading pointer-events-none absolute inset-0 z-10 flex-col bg-background-base opacity-0"
+    <div class="view-reading pointer-events-none absolute inset-0 z-10 flex-col bg-background-base opacity-0 dark:bg-dark-background-base"
       id="reading-view">
       <header class="fixed top-0 left-0 right-0 z-20 liquidGlass-wrapper rounded-none px-4 pb-3 pt-4 shadow-none">
         <div class="liquidGlass-effect rounded-none"></div>
@@ -108,7 +110,7 @@
         </div>
       </header>
       <main class="flex-grow overflow-y-auto px-5 pt-24 pb-16">
-        <article class="prose prose-lg max-w-none font-sans leading-relaxed text-text-primary"></article>
+        <article class="prose prose-lg max-w-none font-sans leading-relaxed text-text-primary dark:text-dark-text-primary"></article>
       </main>
       <footer class="fixed bottom-0 left-0 right-0 z-30 p-4">
         <div class="liquidGlass-wrapper mx-auto max-w-sm rounded-full">
@@ -137,29 +139,46 @@
   <script type="module" src="db.js"></script>
   <script type="module" src="views.js"></script>
   <script type="module" src="app.js"></script>
-  <div id="language-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/30 backdrop-blur-sm"
-    aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/30 backdrop-blur-sm"
+    aria-labelledby="modal-title-settings" role="dialog" aria-modal="true">
     <div class="liquidGlass-wrapper w-full max-w-xs rounded-xl">
       <div class="liquidGlass-effect rounded-xl"></div>
       <div class="liquidGlass-tint rounded-xl bg-white/85"></div>
       <div class="liquidGlass-shine rounded-xl"></div>
       <div class="liquidGlass-text p-6">
-        <h2 id="modal-title" class="text-xl font-semibold text-text-primary">Select Language</h2>
-        <div class="mt-4 space-y-2">
-          <button id="lang-en"
-            class="flex w-full items-center gap-3 rounded-lg border border-transparent p-3 text-left transition-colors hover:bg-black/5">
-            <img src="https://flagcdn.com/w40/gb.png" alt="English Flag" class="h-6 w-6 rounded-full">
-            <span class="font-medium text-text-primary">English</span>
-          </button>
-          <button id="lang-de"
-            class="flex w-full items-center gap-3 rounded-lg border border-transparent p-3 text-left transition-colors hover:bg-black/5">
-            <img src="https://flagcdn.com/w40/de.png" alt="German Flag" class="h-6 w-6 rounded-full">
-            <span class="font-medium text-text-primary">Deutsch</span>
-          </button>
+        <h2 id="modal-title-settings" class="text-xl font-semibold text-text-primary">Settings</h2>
+        <div class="mt-4 space-y-4">
+          <!-- Language Selection -->
+          <div>
+            <h3 class="text-lg font-medium text-text-primary mb-2">Select Language</h3>
+            <div class="space-y-2">
+              <button id="lang-en"
+                class="flex w-full items-center gap-3 rounded-lg border border-transparent p-3 text-left transition-colors hover:bg-black/5">
+                <img src="https://flagcdn.com/w40/gb.png" alt="English Flag" class="h-6 w-6 rounded-full">
+                <span class="font-medium text-text-primary">English</span>
+              </button>
+              <button id="lang-de"
+                class="flex w-full items-center gap-3 rounded-lg border border-transparent p-3 text-left transition-colors hover:bg-black/5">
+                <img src="https://flagcdn.com/w40/de.png" alt="German Flag" class="h-6 w-6 rounded-full">
+                <span class="font-medium text-text-primary">Deutsch</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dark Mode Switch -->
+          <div class="flex items-center justify-between">
+            <span class="text-lg font-medium text-text-primary">Dark Mode</span>
+            <label for="dark-mode-switch" class="relative inline-flex cursor-pointer items-center">
+              <input type="checkbox" value="" id="dark-mode-switch" class="peer sr-only">
+              <div
+                class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gold-accent peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-accent/20 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-gold-accent/50">
+              </div>
+            </label>
+          </div>
         </div>
         <div class="mt-6 flex justify-end">
           <button id="close-modal"
-            class="rounded-full bg-black/5 px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-black/10">Cancel</button>
+            class="rounded-full bg-black/5 px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-black/10 dark:bg-dark-divider-faint dark:text-dark-text-secondary dark:hover:bg-dark-text-secondary/20">Cancel</button>
         </div>
       </div>
     </div>

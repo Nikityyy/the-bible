@@ -3,6 +3,7 @@ export class StateManager {
         this.state = {
             language: 'en',
             currentPage: 'main',
+            darkMode: false, // Default to light mode
             readingProgress: {
                 en: {
                     lastRead: { book: 'Genesis', chapter: 1 },
@@ -46,6 +47,10 @@ export class StateManager {
         this.updateState({ language: newLanguage });
     }
 
+    setDarkMode(isDark) {
+        this.updateState({ darkMode: isDark });
+    }
+
     setCurrentPage(page) {
         this.updateState({ currentPage: page });
     }
@@ -71,9 +76,13 @@ export class StateManager {
             }
 
             Object.assign(this.state, loadedState);
-
+            // Ensure darkMode is initialized if not present in loadedState
+            if (typeof loadedState.darkMode === 'undefined') {
+                this.state.darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
         } else {
             this.state.language = navigator.language.startsWith('de') ? 'de' : 'en';
+            this.state.darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
     }
 

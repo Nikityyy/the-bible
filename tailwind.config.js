@@ -10,6 +10,13 @@ tailwind.config = {
         "text-primary": "#1C1C1E",
         "text-secondary": "#6E6E73",
         "divider-faint": "#E5E5EA",
+        dark: {
+          "background-base": "#121212",
+          "surface-white": "#1E1E1E",
+          "text-primary": "#E0E0E0",
+          "text-secondary": "#A0A0A0",
+          "divider-faint": "#333333",
+        }
       },
       fontFamily: {
         "sans": ["Inter", 'Helvetica Neue', 'sans-serif']

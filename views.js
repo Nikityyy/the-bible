@@ -8,7 +8,9 @@ const translations = {
         ask: 'Ask',
         loading: 'Loading...',
         selectLanguage: 'Select Language',
-        cancel: 'Cancel'
+        cancel: 'Cancel',
+        settings: 'Settings',
+        darkMode: 'Dark Mode'
     },
     de: {
         continueReading: 'Weiterlesen',
@@ -17,7 +19,9 @@ const translations = {
         ask: 'Fragen',
         loading: 'Laden...',
         selectLanguage: 'Sprache auswählen',
-        cancel: 'Abbrechen'
+        cancel: 'Abbrechen',
+        settings: 'Einstellungen',
+        darkMode: 'Dunkelmodus'
     }
 };
 
@@ -28,7 +32,7 @@ export class ViewManager {
             readingView: document.querySelector('.view-reading'),
             readingMain: document.querySelector('.view-reading main'),
             backToMainButton: document.querySelector('.view-reading header a'),
-            languageSwitcher: document.getElementById('language-switcher'),
+            settingsButton: document.getElementById('settings-button'),
             bookListSection: document.getElementById('book-list'),
             continueReadingLink: document.querySelector('a[href="#reading-view"]'),
             continueReadingProgressBar: document.getElementById('continue-reading-progress-bar'),
@@ -38,10 +42,11 @@ export class ViewManager {
             prevChapterLabel: document.querySelector('.view-reading footer a:first-child span:last-child'),
             nextChapterLabel: document.querySelector('.view-reading footer a:last-child span:first-child'),
             loadingOverlay: document.getElementById('loading-overlay'),
-            languageModal: document.getElementById('language-modal'),
+            settingsModal: document.getElementById('settings-modal'),
             closeModalButton: document.getElementById('close-modal'),
             langEnButton: document.getElementById('lang-en'),
-            langDeButton: document.getElementById('lang-de')
+            langDeButton: document.getElementById('lang-de'),
+            darkModeSwitch: document.getElementById('dark-mode-switch')
         };
 
         // Swipe properties
@@ -183,24 +188,23 @@ export class ViewManager {
         }
     }
 
-    setLanguageSwitcher(language) {
-        this.domElements.languageSwitcher.innerHTML = `<span class="material-symbols-outlined text-2xl">language</span>`;
-        document.documentElement.setAttribute('lang', language);
-        this.updateUITexts(language);
-        this.updateLanguageModal(language);
+    setDarkModeToggle(isDarkMode) {
+        if (this.domElements.darkModeSwitch) {
+            this.domElements.darkModeSwitch.checked = isDarkMode;
+        }
     }
 
-    showLanguageModal() {
-        this.domElements.languageModal.classList.remove('hidden');
-        this.domElements.languageModal.classList.add('flex');
+    showSettingsModal() {
+        this.domElements.settingsModal.classList.remove('hidden');
+        this.domElements.settingsModal.classList.add('flex');
     }
 
-    hideLanguageModal() {
-        this.domElements.languageModal.classList.add('hidden');
-        this.domElements.languageModal.classList.remove('flex');
+    hideSettingsModal() {
+        this.domElements.settingsModal.classList.add('hidden');
+        this.domElements.settingsModal.classList.remove('flex');
     }
 
-    updateLanguageModal(currentLanguage) {
+    updateSettingsModal(currentLanguage) {
         if (currentLanguage === 'en') {
             this.domElements.langEnButton.classList.add('bg-gold-accent/10');
             this.domElements.langEnButton.querySelector('span').classList.add('text-gold-accent');
@@ -244,11 +248,15 @@ export class ViewManager {
         });
     }
 
-    bindLanguageModal(openHandler, closeHandler, langSelectHandler) {
-        this.domElements.languageSwitcher.addEventListener('click', () => { triggerHapticFeedback(); openHandler(); });
+    bindSettingsModal(openHandler, closeHandler, langSelectHandler, darkModeToggleHandler) {
+        this.domElements.settingsButton.addEventListener('click', () => { triggerHapticFeedback(); openHandler(); });
         this.domElements.closeModalButton.addEventListener('click', () => { triggerHapticFeedback(); closeHandler(); });
         this.domElements.langEnButton.addEventListener('click', () => { triggerHapticFeedback(); langSelectHandler('en'); });
         this.domElements.langDeButton.addEventListener('click', () => { triggerHapticFeedback(); langSelectHandler('de'); });
+        this.domElements.darkModeSwitch.addEventListener('change', (e) => {
+            triggerHapticFeedback();
+            darkModeToggleHandler(e.target.checked);
+        });
     }
 
     bindSwipeNavigation(prevChapterHandler, nextChapterHandler) {
@@ -344,9 +352,13 @@ export class ViewManager {
         if (loadingMsg && loadingMsg.textContent === translations.en.loading) loadingMsg.textContent = t.loading;
 
         // Update modal texts
-        const modalTitle = this.domElements.languageModal.querySelector('#modal-title');
-        if (modalTitle) modalTitle.textContent = t.selectLanguage;
+        const modalTitle = this.domElements.settingsModal.querySelector('#modal-title-settings');
+        if (modalTitle) modalTitle.textContent = t.settings;
         if (this.domElements.closeModalButton) this.domElements.closeModalButton.textContent = t.cancel;
+        const selectLanguageTitle = this.domElements.settingsModal.querySelector('h3');
+        if (selectLanguageTitle) selectLanguageTitle.textContent = t.selectLanguage;
+        const darkModeLabel = this.domElements.settingsModal.querySelector('div.flex.items-center.justify-between span');
+        if (darkModeLabel) darkModeLabel.textContent = t.darkMode;
     }
 
     initOverscrollBounce() {
@@ -395,7 +407,7 @@ export class ViewManager {
                     if (e.cancelable) {
                         e.preventDefault();
                     }
-                    const resistance = 2.5;
+                    const resistance = 3.5; // Increased resistance
                     const pullDistance = deltaY / resistance;
 
                     rafId = requestAnimationFrame(() => {
@@ -419,8 +431,8 @@ export class ViewManager {
                     let velocity = 0;
                     let position = currentTransform.m42;
                     const target = 0;
-                    const stiffness = 0.3; // Adjust for desired springiness
-                    const damping = 0.8; // Adjust for desired damping
+                    const stiffness = 0.2; // Decreased stiffness
+                    const damping = 0.9; // Increased damping
 
                     const animateSpring = () => {
                         const displacement = target - position;

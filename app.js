@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let bibleData = {};
 
+    // Dark Mode Logic
+    function applyDarkMode(isDark) {
+        document.documentElement.classList.toggle('dark', isDark);
+        stateManager.setDarkMode(isDark);
+    }
+
+    function handleDarkModeToggle(isDark) {
+        applyDarkMode(isDark);
+    }
+
     // Debounce utility function
     function debounce(func, delay) {
         let timeout;
@@ -66,12 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleLanguageSwitch(newLanguage) {
         const state = stateManager.getState();
         if (newLanguage === state.language) {
-            viewManager.hideLanguageModal();
+            viewManager.hideSettingsModal();
             return;
         }
         stateManager.switchLanguage(newLanguage);
-        viewManager.setLanguageSwitcher(newLanguage);
-        viewManager.hideLanguageModal();
+        viewManager.hideSettingsModal();
         viewManager.showLoading('Loading Bible data...');
         try {
             await loadBibleData(newLanguage);
@@ -147,7 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stateManager.loadFromLocalStorage();
         const state = stateManager.getState();
 
-        viewManager.setLanguageSwitcher(state.language);
+        // Apply dark mode preference from state
+        applyDarkMode(state.darkMode);
+        viewManager.setDarkModeToggle(state.darkMode);
 
         stateManager.subscribe(() => {
             updateContinueReading();
@@ -195,10 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
         () => debouncedHandleNavigateChapter(1)
     );
     viewManager.bindContinueReading(handleContinueReading);
-    viewManager.bindLanguageModal(
-        () => viewManager.showLanguageModal(),
-        () => viewManager.hideLanguageModal(),
-        handleLanguageSwitch
+    viewManager.bindSettingsModal(
+        () => viewManager.showSettingsModal(),
+        () => viewManager.hideSettingsModal(),
+        handleLanguageSwitch,
+        handleDarkModeToggle
     );
 
     initializeApp();
