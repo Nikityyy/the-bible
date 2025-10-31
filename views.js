@@ -233,7 +233,7 @@ export class ViewManager {
 
     renderBookList(books, bookProgress, language = 'en') {
         const bookArray = Object.keys(books);
-        // const isMobile = window.innerWidth < 768;
+        const isMobile = window.innerWidth < 768;
 
         // For mobile, use simpler layout and limit initial render
         // const maxInitialRender = isMobile ? 20 : bookArray.length;
