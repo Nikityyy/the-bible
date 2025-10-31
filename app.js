@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewManager.domElements.readingMain) {
             viewManager.domElements.readingMain.scrollTop = 0;
         }
+        
     }
 
     function getCanonicalBookOrder(bibleData) {
@@ -304,16 +305,15 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         handlePathClick();
     });
-    const debouncedHandleNavigateChapter = debounce(handleNavigateChapter, 50);
 
     viewManager.bindNavigationClicks(
-        () => debouncedHandleNavigateChapter(-1),
-        () => debouncedHandleNavigateChapter(1),
+        () => handleNavigateChapter(-1),
+        () => handleNavigateChapter(1),
         handleBackToMain
     );
     viewManager.bindSwipeNavigation(
-        () => debouncedHandleNavigateChapter(-1),
-        () => debouncedHandleNavigateChapter(1)
+        () => handleNavigateChapter(-1),
+        () => handleNavigateChapter(1)
     );
     viewManager.bindContinueReading(handleContinueReading);
     viewManager.bindSettingsModal(

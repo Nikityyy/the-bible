@@ -210,12 +210,12 @@ export class ViewManager {
         views.forEach(view => {
             if (view === activeView) {
                 view.style.display = 'flex';
-                view.classList.remove('opacity-0', 'pointer-events-none');
-                view.classList.add('opacity-100', 'pointer-events-auto');
+                // Ensure pointer events are enabled immediately
+                view.style.pointerEvents = 'auto';
             } else {
                 view.style.display = 'none';
-                view.classList.remove('opacity-100', 'pointer-events-auto');
-                view.classList.add('opacity-0', 'pointer-events-none');
+                // Ensure pointer events are disabled immediately
+                view.style.pointerEvents = 'none';
             }
         });
     }
@@ -455,10 +455,10 @@ export class ViewManager {
                 let direction = '';
                 if (diffX > 0) {
                     direction = 'right';
-                    setTimeout(prevChapterHandler, 100);
+                    setTimeout(prevChapterHandler, 150);
                 } else {
                     direction = 'left';
-                    setTimeout(nextChapterHandler, 100);
+                    setTimeout(nextChapterHandler, 150);
                 }
 
                 article.classList.add(`swipe-out-${direction}`);

@@ -16,6 +16,8 @@ body {
   background-color: #F9F9FB;
   /* Light mode default */
   min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .dark body {
@@ -53,6 +55,7 @@ body {
   inset: 0;
   backdrop-filter: blur(3px);
   overflow: hidden;
+  pointer-events: none;
 }
 
 .liquidGlass-tint {
@@ -61,6 +64,7 @@ body {
   inset: 0;
   background: rgba(255, 255, 255, 0.10);
   /* Light mode tint */
+  pointer-events: none;
 }
 
 .dark .liquidGlass-tint {
@@ -76,6 +80,7 @@ body {
   box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
     inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
   /* Light mode shine */
+  pointer-events: none;
 }
 
 .dark .liquidGlass-shine {
@@ -92,6 +97,27 @@ body {
 /* Header Styles */
 header {
   position: relative;
+}
+
+/* Mobile Touch Optimizations */
+button,
+a,
+.book-link,
+.cursor-pointer {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Interactive Elements */
+.book-card,
+.path-book-card {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Book Card Hover Effect */
@@ -218,7 +244,6 @@ span:has(.book-chapter-label),
 /* Overscroll Bounce Effect */
 .overscroll-wrapper {
   transition: transform 0.2s;
-  pointer-events: none;
 }
 
 /* Pure JS View Transitions - Removed for instant switching */
