@@ -50,6 +50,7 @@ export class ViewManager {
         this.currentX = 0;
         this.currentY = 0;
         this.swipeThreshold = 50; // Minimum pixels to register a swipe
+        this.isSwiping = false;
     }
 
     showMainView() {
@@ -218,8 +219,10 @@ export class ViewManager {
 
     bindSwipeNavigation(prevChapterHandler, nextChapterHandler) {
         const readingView = this.domElements.readingView;
+        const article = readingView.querySelector('article');
 
         readingView.addEventListener('touchstart', (e) => {
+            if (this.isSwiping) return;
             this.startX = e.touches[0].clientX;
             this.startY = e.touches[0].clientY;
             this.currentX = this.startX;
@@ -227,25 +230,39 @@ export class ViewManager {
         }, { passive: true });
 
         readingView.addEventListener('touchmove', (e) => {
+            if (this.isSwiping) return;
             this.currentX = e.touches[0].clientX;
             this.currentY = e.touches[0].clientY;
         }, { passive: true });
 
         readingView.addEventListener('touchend', () => {
+            if (this.isSwiping) return;
+
             const diffX = this.currentX - this.startX;
             const diffY = this.currentY - this.startY;
 
-            // Determine if it's a horizontal swipe and exceeds threshold
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > this.swipeThreshold) {
+                this.isSwiping = true;
+                let direction = '';
                 if (diffX > 0) {
-                    // Swiped right (previous chapter)
-                    prevChapterHandler();
+                    direction = 'right';
+                    setTimeout(prevChapterHandler, 100);
                 } else {
-                    // Swiped left (next chapter)
-                    nextChapterHandler();
+                    direction = 'left';
+                    setTimeout(nextChapterHandler, 100);
                 }
+
+                article.classList.add(`swipe-out-${direction}`);
+                article.addEventListener('animationend', () => {
+                    article.classList.remove(`swipe-out-${direction}`);
+                    article.classList.add(`swipe-in-${direction}`);
+                    article.addEventListener('animationend', () => {
+                        article.classList.remove(`swipe-in-${direction}`);
+                        this.isSwiping = false;
+                    }, { once: true });
+                }, { once: true });
             }
-            // Reset touch coordinates
+
             this.startX = 0;
             this.startY = 0;
             this.currentX = 0;

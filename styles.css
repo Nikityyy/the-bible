@@ -128,6 +128,43 @@ span:has(.book-chapter-label),
   color: #6E6E73;
 }
 
+/* Swipe Animations */
+@keyframes swipe-out-left {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-20%); opacity: 0; }
+}
+
+@keyframes swipe-out-right {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(20%); opacity: 0; }
+}
+
+@keyframes swipe-in-left {
+    from { transform: translateX(20%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes swipe-in-right {
+    from { transform: translateX(-20%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.swipe-out-left {
+    animation: swipe-out-left 0.2s ease-out forwards;
+}
+
+.swipe-out-right {
+    animation: swipe-out-right 0.2s ease-out forwards;
+}
+
+.swipe-in-left {
+    animation: swipe-in-left 0.2s ease-out forwards;
+}
+
+.swipe-in-right {
+    animation: swipe-in-right 0.2s ease-out forwards;
+}
+
 /* ==========================================================================
    Utility Classes
    ========================================================================== */
