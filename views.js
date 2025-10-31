@@ -242,7 +242,15 @@ export class ViewManager {
         let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-total-books="${bookArray.length}" data-rendered-count="${initialBooks.length}">`;
 
         initialBooks.forEach((book, index) => {
-            const chaptersInBook = books[book] || 1; // Use metadata or default to 1
+            // Handle both metadata (numbers) and full bible data (objects)
+            let chaptersInBook;
+            if (typeof books[book] === 'number') {
+                chaptersInBook = books[book]; // Metadata format
+            } else if (books[book] && typeof books[book] === 'object') {
+                chaptersInBook = Object.keys(books[book]).length; // Full bible data format
+            } else {
+                chaptersInBook = 1; // Default fallback
+            }
             const chaptersRead = bookProgress[book] || 0;
             const progressPercentage = chaptersInBook > 0 ? (chaptersRead / chaptersInBook) * 100 : 0;
 
@@ -312,7 +320,15 @@ export class ViewManager {
 
         let html = '';
         newBooks.forEach((book) => {
-            const chaptersInBook = books[book] || 1;
+            // Handle both metadata (numbers) and full bible data (objects)
+            let chaptersInBook;
+            if (typeof books[book] === 'number') {
+                chaptersInBook = books[book]; // Metadata format
+            } else if (books[book] && typeof books[book] === 'object') {
+                chaptersInBook = Object.keys(books[book]).length; // Full bible data format
+            } else {
+                chaptersInBook = 1; // Default fallback
+            }
             const chaptersRead = bookProgress[book] || 0;
             const progressPercentage = chaptersInBook > 0 ? (chaptersRead / chaptersInBook) * 100 : 0;
 
