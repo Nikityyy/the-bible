@@ -199,8 +199,6 @@ export class ViewManager {
         this.currentY = 0;
         this.swipeThreshold = 50; // Minimum pixels to register a swipe
         this.isSwiping = false;
-
-        this.initOverscrollBounce();
     }
 
     _transitionTimeout = null;
@@ -587,103 +585,5 @@ export class ViewManager {
         if (selectLanguageTitle) selectLanguageTitle.textContent = t.selectLanguage;
         const darkModeLabel = this.domElements.settingsModal.querySelector('div.flex.items-center.justify-between span');
         if (darkModeLabel) darkModeLabel.textContent = t.darkMode;
-    }
-
-    initOverscrollBounce() {
-        const scrollAreas = [
-            this.domElements.mainView.querySelector('main'),
-            this.domElements.readingMain,
-            this.domElements.pathView.querySelector('main')
-        ];
-
-        scrollAreas.forEach(scrollContainer => {
-            if (!scrollContainer) return;
-
-            const wrapper = document.createElement('div');
-            wrapper.classList.add('overscroll-wrapper');
-            while (scrollContainer.firstChild) {
-                wrapper.appendChild(scrollContainer.firstChild);
-            }
-            scrollContainer.appendChild(wrapper);
-
-            let startY = 0;
-            let isDragging = false;
-            let rafId = null;
-
-            scrollContainer.addEventListener('touchstart', (e) => {
-                startY = e.touches[0].pageY;
-                isDragging = true;
-                if (rafId) {
-                    cancelAnimationFrame(rafId);
-                    rafId = null;
-                }
-            }, { passive: true });
-
-            scrollContainer.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-
-                const currentY = e.touches[0].pageY;
-                const deltaY = currentY - startY;
-
-                const scrollTop = scrollContainer.scrollTop;
-                const scrollHeight = scrollContainer.scrollHeight;
-                const clientHeight = scrollContainer.clientHeight;
-
-                if (
-                    (scrollTop <= 0 && deltaY > 0) ||
-                    (Math.abs(scrollHeight - clientHeight - scrollTop) < 1 && deltaY < 0)
-                ) {
-                    if (e.cancelable) {
-                        e.preventDefault();
-                    }
-                    const resistance = 3.5; // Increased resistance
-                    const pullDistance = deltaY / resistance;
-
-                    rafId = requestAnimationFrame(() => {
-                        wrapper.style.transform = `translateY(${pullDistance}px)`;
-                    });
-                }
-            }, { passive: false });
-
-            const release = () => {
-                if (!isDragging) return;
-                isDragging = false;
-
-                if (rafId) {
-                    cancelAnimationFrame(rafId);
-                    rafId = null;
-                }
-
-                const currentTransform = new DOMMatrix(getComputedStyle(wrapper).transform);
-                if (currentTransform.m42 !== 0) {
-                    // Custom spring animation
-                    let velocity = 0;
-                    let position = currentTransform.m42;
-                    const target = 0;
-                    const stiffness = 0.2; // Decreased stiffness
-                    const damping = 0.9; // Increased damping
-
-                    const animateSpring = () => {
-                        const displacement = target - position;
-                        const acceleration = stiffness * displacement - damping * velocity;
-                        velocity += acceleration;
-                        position += velocity;
-
-                        if (Math.abs(displacement) < 0.1 && Math.abs(velocity) < 0.1) {
-                            position = target;
-                            wrapper.style.transform = `translateY(${position}px)`;
-                            return;
-                        }
-
-                        wrapper.style.transform = `translateY(${position}px)`;
-                        requestAnimationFrame(animateSpring);
-                    };
-                    requestAnimationFrame(animateSpring);
-                }
-            };
-
-            scrollContainer.addEventListener('touchend', release);
-            scrollContainer.addEventListener('touchcancel', release);
-        });
     }
 }

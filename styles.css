@@ -241,11 +241,6 @@ span:has(.book-chapter-label),
   display: none;
 }
 
-/* Overscroll Bounce Effect */
-.overscroll-wrapper {
-  transition: transform 0.2s;
-}
-
 /* Pure JS View Transitions - Removed for instant switching */
 /*
 .view-main.transition-out {
