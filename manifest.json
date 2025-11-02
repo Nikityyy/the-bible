@@ -1,7 +1,7 @@
 {
-  "name": "Bible App",
+  "name": "The Bible",
   "description": "Read the Bible in English and German with offline support. Where faith and curiosity meet.",
-  "start_url": "/",
+  "start_url": "/the-bible",
   "display": "standalone",
   "background_color": "#F9F9FB",
   "theme_color": "#D4AF37",
